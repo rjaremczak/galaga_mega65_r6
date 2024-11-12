@@ -3,5 +3,5 @@
 	url = https://github.com/sy2002/QNICE-FPGA
 	branch = dev-V1.61
 [submodule "GalagaMEGA65"]
-	path = CORE/Arcade-Xevious_MiSTer
+	path = CORE/GalagaMEGA65
 	url = git@github.com:rjaremczak/GalagaMEGA65.git
