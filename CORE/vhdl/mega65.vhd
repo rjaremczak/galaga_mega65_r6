@@ -195,29 +195,29 @@ constant C_MENU_VGA_STD       : natural := 23;
 constant C_MENU_VGA_15KHZHSVS : natural := 27;
 constant C_MENU_VGA_15KHZCS   : natural := 28;
 
-constant C_MENU_ATARI         : natural := 34;
+constant C_MENU_MIDWAY        : natural := 34;
 constant C_MENU_NAMCO         : natural := 35;
 
 -- ATARI DIPs
 -- Dipswitch B
-constant C_MENU_ATARI_DSWB_0 : natural := 40;
-constant C_MENU_ATARI_DSWB_1 : natural := 41;
-constant C_MENU_ATARI_DSWB_2 : natural := 42;
-constant C_MENU_ATARI_DSWB_3 : natural := 43;
-constant C_MENU_ATARI_DSWB_4 : natural := 44;
-constant C_MENU_ATARI_DSWB_5 : natural := 45;
-constant C_MENU_ATARI_DSWB_6 : natural := 46;
-constant C_MENU_ATARI_DSWB_7 : natural := 47;
+constant C_MENU_MIDWAY_DSWB_0 : natural := 40;
+constant C_MENU_MIDWAY_DSWB_1 : natural := 41;
+constant C_MENU_MIDWAY_DSWB_2 : natural := 42;
+constant C_MENU_MIDWAY_DSWB_3 : natural := 43;
+constant C_MENU_MIDWAY_DSWB_4 : natural := 44;
+constant C_MENU_MIDWAY_DSWB_5 : natural := 45;
+constant C_MENU_MIDWAY_DSWB_6 : natural := 46;
+constant C_MENU_MIDWAY_DSWB_7 : natural := 47;
 
 -- Dipswitch A
-constant C_MENU_ATARI_DSWA_0 : natural := 49;
-constant C_MENU_ATARI_DSWA_1 : natural := 50;
-constant C_MENU_ATARI_DSWA_2 : natural := 51;
-constant C_MENU_ATARI_DSWA_3 : natural := 52;
-constant C_MENU_ATARI_DSWA_4 : natural := 53;
-constant C_MENU_ATARI_DSWA_5 : natural := 54;
-constant C_MENU_ATARI_DSWA_6 : natural := 55;
-constant C_MENU_ATARI_DSWA_7 : natural := 56;
+constant C_MENU_MIDWAY_DSWA_0 : natural := 49;
+constant C_MENU_MIDWAY_DSWA_1 : natural := 50;
+constant C_MENU_MIDWAY_DSWA_2 : natural := 51;
+constant C_MENU_MIDWAY_DSWA_3 : natural := 52;
+constant C_MENU_MIDWAY_DSWA_4 : natural := 53;
+constant C_MENU_MIDWAY_DSWA_5 : natural := 54;
+constant C_MENU_MIDWAY_DSWA_6 : natural := 55;
+constant C_MENU_MIDWAY_DSWA_7 : natural := 56;
 
 -- Namco DIPs
 -- Dipswitch B
@@ -240,8 +240,7 @@ constant C_MENU_NAMCO_DSWA_5  : natural := 76;
 constant C_MENU_NAMCO_DSWA_6  : natural := 77;
 constant C_MENU_NAMCO_DSWA_7  : natural := 78;
 
-
--- Xevious specific video processing
+-- Galaga specific video processing
 signal div          : std_logic_vector(2 downto 0);
 signal dim_video    : std_logic;
 signal dsw_a_i      : std_logic_vector(7 downto 0);
@@ -274,8 +273,8 @@ signal ddram_data       : std_logic_vector(63 downto 0);
 signal ddram_be         : std_logic_vector( 7 downto 0);
 signal ddram_we         : std_logic;
 
--- ROM devices for Xevious
-signal qnice_dn_addr    : std_logic_vector(16 downto 0);
+-- ROM devices for Galaga
+signal qnice_dn_addr    : std_logic_vector(15 downto 0);
 signal qnice_dn_data    : std_logic_vector(7 downto 0);
 signal qnice_dn_wr      : std_logic;
 
@@ -307,20 +306,19 @@ begin
    main_drive_led_o       <= '0';
    main_drive_led_col_o   <= x"00FF00"; 
 
-
    -- MMCME2_ADV clock generators:
    clk_gen : entity work.clk
       port map (
          sys_clk_i         => clk_i,             -- expects 100 MHz
          
-         main_clk_o        => main_clk,        -- Xevious's 18 MHz main clock
-         main_rst_o        => main_rst,        -- Xevious's reset, synchronized
+         main_clk_o        => main_clk,        -- Galaga's 18 MHz main clock
+         main_rst_o        => main_rst,        -- Galaga's reset, synchronized
          
          video_clk_o       => video_clk,       -- video clock 48 MHz
          video_rst_o       => video_rst        -- video reset, synchronized
       
       ); -- clk_gen
-      
+
       
    i_cdc_qnice2video : xpm_cdc_array_single
       generic map (
@@ -339,14 +337,14 @@ begin
    video_clk_o  <= video_clk;
    video_rst_o  <= video_rst;
    
-   dsw_a_i <= main_osm_control_i(C_MENU_ATARI_DSWA_7) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_6) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_5) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_4) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_3) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_2) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_1) &
-              main_osm_control_i(C_MENU_ATARI_DSWA_0)  when main_osm_control_i(C_MENU_ATARI) = '1' else
+   dsw_a_i <= main_osm_control_i(C_MENU_MIDWAY_DSWA_7) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_6) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_5) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_4) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_3) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_2) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_1) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWA_0)  when main_osm_control_i(C_MENU_MIDWAY) = '1' else
                     
               main_osm_control_i(C_MENU_NAMCO_DSWA_7) & 
               main_osm_control_i(C_MENU_NAMCO_DSWA_6) &
@@ -357,16 +355,16 @@ begin
               main_osm_control_i(C_MENU_NAMCO_DSWA_1) &
               main_osm_control_i(C_MENU_NAMCO_DSWA_0);       
    
-  dsw_b_i <=  main_osm_control_i(C_MENU_ATARI_DSWB_7) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_6) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_5) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_4) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_3) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_2) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_1) &
-              main_osm_control_i(C_MENU_ATARI_DSWB_0)  when main_osm_control_i(C_MENU_ATARI) = '1' else
+  dsw_b_i <=  main_osm_control_i(C_MENU_MIDWAY_DSWB_7) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_6) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_5) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_4) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_3) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_2) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_1) &
+              main_osm_control_i(C_MENU_MIDWAY_DSWB_0)  when main_osm_control_i(C_MENU_MIDWAY) = '1' else
                     
-              '0' & --main_osm_control_i(C_MENU_NAMCO_DSWB_7) & -- disable broken cocktail mode
+              main_osm_control_i(C_MENU_NAMCO_DSWB_7) & -- or '0' as it is in Xevious
               main_osm_control_i(C_MENU_NAMCO_DSWB_6) &
               main_osm_control_i(C_MENU_NAMCO_DSWB_5) &
               main_osm_control_i(C_MENU_NAMCO_DSWB_4) &
@@ -604,14 +602,12 @@ begin
    qnice_audio_mute_o         <= '0';
    qnice_audio_filter_o       <= '1';
    
-   -- These two signals are often used as a pair (i.e. both '1'), particularly when
-   -- you want to run old analog cathode ray tube monitors or TVs (via SCART)
-   -- If you want to provide your users a choice, then a good choice is:
-   --    "Standard VGA":                     qnice_retro15kHz_o=0 and qnice_csync_o=0
-   --    "Retro 15 kHz with HSync and VSync" qnice_retro15kHz_o=1 and qnice_csync_o=0
-   --    "Retro 15 kHz with CSync"           qnice_retro15kHz_o=1 and qnice_csync_o=1
-   qnice_retro15kHz_o         <= '0';
-   qnice_csync_o              <= '0';
+   -- qnice_retro15kHz_o: '1', if the output from the core (post-scandoubler) in the retro 15 kHz analog RGB mode.
+   --             Hint: Scandoubler off does not automatically mean retro 15 kHz on.
+   qnice_retro15kHz_o  <= qnice_osm_control_i(C_MENU_VGA_15KHZHSVS) or qnice_osm_control_i(C_MENU_VGA_15KHZCS);
+   qnice_scandoubler_o <= not qnice_retro15kHz_o; --(qnice_osm_control_i(C_MENU_VGA_15KHZHSVS) or qnice_osm_control_i(C_MENU_VGA_15KHZCS));   
+   qnice_csync_o       <= qnice_osm_control_i(C_MENU_VGA_15KHZCS);
+
    qnice_osm_cfg_scaling_o    <= (others => '1');
 
    -- ascal filters that are applied while processing the input
@@ -649,112 +645,51 @@ begin
 
       case qnice_dev_id_i is
       
---roms_cs <= '1' when dn_addr(16 downto 12) < "10001"   else '0'; 64.5 kb rom 1,2,3, sub cpu 1, sub cpu 2, Gfx 1, Gfx 2, Gfx 3
---romta_cs <= '1' when dn_addr(16 downto 12) = "10001"   else '0'; 4096 bytes / gfx 4 - 2a rom - xvi_9.2a
---romtb_cs <= '1' when dn_addr(16 downto 13) = "1001"    else '0'; 8192 bytes / gfx 4 - 2b rom - xvi_10.2b
---romtc_cs <= '1' when dn_addr(16 downto 12) = "10100"   else '0'; 4096 bytes / gfx 4 - 2c rom - xvi_11.2c
---rom50_cs <= '1' when dn_addr(16 downto 11) = "101010"  else '0'; 2048 bytes 50xx
---rom51_cs <= '1' when dn_addr(16 downto 10) = "1010110" else '0'; 1024 bytes 51xx
---rom54_cs <= '1' when dn_addr(16 downto 10) = "1010111" else '0'; 1024 bytes 54xx
-
-         -- Xevious ROMS
-         
-         -- CPU 1
-         when C_DEV_XEV_CPU_ROM1 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "000" & qnice_dev_addr_i(13 downto 0);  --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-              
-         -- CPU 2
-         when C_DEV_XEV_CPU_ROM2 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "0010" & qnice_dev_addr_i(12 downto 0);  --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-              
-         -- CPU 3     
-         when C_DEV_XEV_CPU_ROM3 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "00110" & qnice_dev_addr_i(11 downto 0); --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-         
-         -- foreground gfx1     
-         when C_DEV_XEV_GFX1 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "00111" & qnice_dev_addr_i(11 downto 0); --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);   
-              
-         -- background gfx2
-         when C_DEV_XEV_GFX2_1 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "01000" & qnice_dev_addr_i(11 downto 0); --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);  
-              
-         -- background gfx2
-         when C_DEV_XEV_GFX2_2 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;        
-              qnice_dn_addr <= "01001" & qnice_dev_addr_i(11 downto 0);  --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);  
-         
-         -- sprite gfx3, sprite set 1, 2 planes
-          when C_DEV_XEV_GFX3_1 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "0101" & qnice_dev_addr_i(12 downto 0);    --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);      
-          
-         -- sprite gfx3, sprite set 2, 2 planes
-         when C_DEV_XEV_GFX3_2 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "0110" & qnice_dev_addr_i(12 downto 0);    --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);    
-         
-         -- sprite gfx3, sprite set 3, 2 planes
-          when C_DEV_XEV_GFX3_3 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "01110" & qnice_dev_addr_i(11 downto 0);   --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);   
-       
-         -- sprite gfx3, sprite set 1 & set 2 - plane 2 - first 4k
-         when C_DEV_XEV_GFX3_4 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "01111" & qnice_dev_addr_i(11 downto 0);    --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); 
-         
-         -- sprite gfx3, sprite set 1 & set 2 - plane 2 - last 4k
-         when C_DEV_XEV_GFX3_5 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "10000" & qnice_dev_addr_i(11 downto 0);    --roms_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); 
+        --rom1_cs  <= '1' when dn_addr(15 downto 14) = "00"     else '0'; -- 16k
+        --rom2_cs  <= '1' when dn_addr(15 downto 12) = "0100"   else '0'; -- 4k
+        --rom3_cs  <= '1' when dn_addr(15 downto 12) = "0101"   else '0'; -- 4k
+        --roms_cs  <= '1' when dn_addr(15 downto 13) = "011"    else '0'; -- 8k
+        --romb_cs  <= '1' when dn_addr(15 downto 13) = "100"    else '0'; -- 8k
+        --rom51_cs <= '1' when dn_addr(15 downto 10) = "101000" else '0'; -- 1k
+        --rom54_cs <= '1' when dn_addr(15 downto 10) = "101001" else '0'; -- 1k
         
-         when C_DEV_XEV_2A_GFX4 =>
+        -- Galaga ROMSs
+         
+         when C_DEV_GAL_CPU_ROM1 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "10001" & qnice_dev_addr_i(11 downto 0);   --romta_cs
+              qnice_dn_addr <= "00" & qnice_dev_addr_i(13 downto 0);    -- rom1_cs
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
 
-         when C_DEV_XEV_2B_GFX4 =>
+         when C_DEV_GAL_CPU_ROM2 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1001" & qnice_dev_addr_i(12 downto 0);   --romtb_cs
+              qnice_dn_addr <= "0100" & qnice_dev_addr_i(11 downto 0);  -- rom2_cs
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
 
-         when C_DEV_XEV_2C_GFX4 =>
+         when C_DEV_GAL_CPU_ROM3 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "10100" & qnice_dev_addr_i(11 downto 0);  --romtc_cs
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); 
-
-         when C_DEV_XEV_MCU1 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "101010" & qnice_dev_addr_i(10 downto 0);  --rom50_cs
+              qnice_dn_addr <= "0101" & qnice_dev_addr_i(11 downto 0);  -- rom3_cs
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
 
-         when C_DEV_XEV_MCU2 =>
+         when C_DEV_GAL_GFX2 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1010110" & qnice_dev_addr_i(9 downto 0);  --rom51_cs
+              qnice_dn_addr <= "011" & qnice_dev_addr_i(12 downto 0);   -- roms_cs
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
 
-         when C_DEV_XEV_MCU3 =>
+         when C_DEV_GAL_GFX1 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1010111" & qnice_dev_addr_i(9 downto 0);  --rom54_cs
+              qnice_dn_addr <= "100" & qnice_dev_addr_i(12 downto 0);   -- romb_cs
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-              
+
+         when C_DEV_GAL_MCU1 =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "101000" & qnice_dev_addr_i(9 downto 0); -- rom51_cs
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
+
+         when C_DEV_GAL_MCU2 =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "101001" & qnice_dev_addr_i(9 downto 0); -- rom52_cs
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
+
          when others => null;
       end case;
 

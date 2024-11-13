@@ -31,9 +31,9 @@ entity main is
       -- Video output
       video_ce_o              : out std_logic;
       video_ce_ovl_o          : out std_logic;
-      video_red_o             : out std_logic_vector(3 downto 0);
-      video_green_o           : out std_logic_vector(3 downto 0);
-      video_blue_o            : out std_logic_vector(3 downto 0);
+      video_red_o             : out std_logic_vector(2 downto 0);
+      video_green_o           : out std_logic_vector(2 downto 0);
+      video_blue_o            : out std_logic_vector(1 downto 0);
       video_vs_o              : out std_logic;
       video_hs_o              : out std_logic;
       video_hblank_o          : out std_logic;
@@ -70,7 +70,7 @@ entity main is
       dsw_b_i                 : in  std_logic_vector(7 downto 0);
 
       dn_clk_i                : in  std_logic;
-      dn_addr_i               : in  std_logic_vector(16 downto 0);
+      dn_addr_i               : in  std_logic_vector(15 downto 0);
       dn_data_i               : in  std_logic_vector(7 downto 0);
       dn_wr_i                 : in  std_logic;
 
@@ -135,14 +135,9 @@ constant m65_5             : integer := 16; --Insert coin 1
 constant m65_6             : integer := 19; --Insert coin 2
 
 -- Offer some keyboard controls in addition to Joy 1 Controls
-constant m65_up_crsr       : integer := 73; --Player up
-constant m65_vert_crsr     : integer := 7;  --Player down
-constant m65_left_crsr     : integer := 74; --Player left
-constant m65_horz_crsr     : integer := 2;  --Player right
-constant m65_left_shift    : integer := 15; --Fire
-constant m65_right_shift   : integer := 52; --Fire 2
-constant m65_space         : integer := 60; --Bomb
-
+constant m65_a             : integer := 10; --Player left
+constant m65_d             : integer := 18; --Player right
+constant m65_up_crsr       : integer := 73; --Player fire
 
 -- Pause, credit button & test mode
 constant m65_p             : integer := 41; --Pause button
@@ -150,14 +145,9 @@ constant m65_s             : integer := 13; --Service 1
 constant m65_capslock      : integer := 72; --Service Mode
 constant m65_help          : integer := 67; --Help key
 
-
-signal p1_bomb_auto : std_logic;
-signal p2_bomb_auto : std_logic;
-signal trigger_sel  : std_logic_vector(3 downto 0);
-
 begin
-   
     reset <= reset_hard_i or reset_soft_i;
+    
     audio_left_o(15) <= not audio(15);
     audio_left_o(14 downto 0) <= signed(audio(14 downto 0));
     audio_right_o(15) <= not audio(15);
@@ -167,37 +157,20 @@ begin
     options(1) <= osm_control_i(C_MENU_OSMDIM);
     flip_screen <= osm_control_i(C_MENU_FLIP);
     
+    -- if pause_cpu is not asserted, it's safe to enter the service/test mode.
+    -- this prevents undesired state of the game when pause_cpu is asserted whilst self_test is enabled.
     
-    trigger_sel <="0000" when osm_control_i(C_MENU_BOMB_TRIG_0) = '1' else
-                  "0001" when osm_control_i(C_MENU_BOMB_TRIG_1) = '1' else
-                  "0010" when osm_control_i(C_MENU_BOMB_TRIG_2) = '1' else
-                  "0011" when osm_control_i(C_MENU_BOMB_TRIG_3) = '1' else
-                  "0100" when osm_control_i(C_MENU_BOMB_TRIG_4) = '1' else
-                  "0101" when osm_control_i(C_MENU_BOMB_TRIG_5) = '1' else
-                  "0110" when osm_control_i(C_MENU_BOMB_TRIG_6) = '1' else
-                  "0111" when osm_control_i(C_MENU_BOMB_TRIG_7) = '1' else
-                  "1000" when osm_control_i(C_MENU_BOMB_TRIG_8) = '1';
-                  
+    process (clk_main_i)
+        begin
+        if rising_edge(clk_main_i) then
+            if  not pause_cpu then 
+                    self_test <= '1' when not keyboard_n(m65_capslock) else '0';
+            end if;
+  
+        end if;
+    end process;
     
-    -- for player 1 and player 2 ( cocktail / table mode )
-    i_bombtrigger : entity work.bombtrigger
-    port map (
-    
-    clk_i           => clk_main_i, -- use the core's 18mhz clock
-    reset_i         => reset,
-    enable_n_i      => osm_control_i(C_MENU_BOMB_TRIG_EN),
-    -- player1                                        
-    fire1_n_i       => joy_1_fire_n_i,
-    bomb1_o         => p1_bomb_auto,
-    -- player2                                       
-    fire2_n_i       => joy_2_fire_n_i,
-    bomb2_o         => p2_bomb_auto,
-    trigger_sel_i   => trigger_sel
-        
-    );
-    
-
-    i_xevious : entity work.xevious
+    i_galaga : entity work.galaga
     port map (
     
     clock_18   => clk_main_i,
@@ -215,34 +188,34 @@ begin
     
     audio       => audio,
     
-    self_test  => not keyboard_n(m65_capslock),
+    self_test  => self_test,
     service    => not keyboard_n(m65_s),
     coin1      => not keyboard_n(m65_5),
     coin2      => not keyboard_n(m65_6),
     start1     => not keyboard_n(m65_1),
     start2     => not keyboard_n(m65_2),
-    up1        => not joy_1_up_n_i, --or not keyboard_n(m65_up_crsr),
-    down1      => not joy_1_down_n_i, --or not keyboard_n(m65_vert_crsr),
-    left1      => not joy_1_left_n_i, --or not keyboard_n(m65_left_crsr),
-    right1     => not joy_1_right_n_i, --or not keyboard_n(m65_horz_crsr),
-    fire1      => not joy_1_fire_n_i, --or not keyboard_n(m65_right_shift),
-    fire2      => not joy_2_fire_n_i, --or not keyboard_n(m65_space),
+    up1        => not joy_1_up_n_i,
+    down1      => not joy_1_down_n_i,
+    left1      => not joy_1_left_n_i or not keyboard_n(m65_a),
+    right1     => not joy_1_right_n_i or not keyboard_n(m65_d),
+    fire1      => not joy_1_fire_n_i or not keyboard_n(m65_up_crsr),
+    -- player 2 joystick is only active in cocktail/table mode.
     up2        => not joy_2_up_n_i,
     down2      => not joy_2_down_n_i,
     left2      => not joy_2_left_n_i,
     right2     => not joy_2_right_n_i,
-    flip       => flip_screen,
+    fire2      => not joy_2_fire_n_i,
+    flip_screen => flip_screen,
     
     -- dip a and b are labelled back to front in MiSTer core, hence this workaround.
     dip_switch_a    => not dsw_b_i,
-    dip_switch_b    => not (dsw_a_i(7 downto 5) & (not keyboard_n(m65_space) or not p2_bomb_auto) & dsw_a_i(3 downto 1) & (not keyboard_n(m65_space) or not p1_bomb_auto)),
-    
+    dip_switch_b    => not dsw_a_i,
     h_offset   => status(27 downto 24),
     v_offset   => status(31 downto 28),
     pause      => pause_cpu or pause_i,
    
     hs_address => hs_address,
-    hs_data_out=> hs_data_out,
+    hs_data_out => hs_data_out,
     hs_data_in => hs_data_in,
     hs_write   => hs_write_enable,
     
@@ -253,7 +226,7 @@ begin
     dn_data    => dn_data_i,
     dn_wr      => dn_wr_i
  );
- 
+
     i_pause : entity work.pause
      generic map (
      
