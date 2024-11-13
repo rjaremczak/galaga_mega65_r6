@@ -168,9 +168,9 @@ signal video_rst           : std_logic;
 ---------------------------------------------------------------------------------------------
 
 -- Unprocessed video output from the Xevious core
-signal main_video_red      : std_logic_vector(3 downto 0);   
-signal main_video_green    : std_logic_vector(3 downto 0);
-signal main_video_blue     : std_logic_vector(3 downto 0);
+signal main_video_red      : std_logic_vector(2 downto 0);   
+signal main_video_green    : std_logic_vector(2 downto 0);
+signal main_video_blue     : std_logic_vector(1 downto 0);
 signal main_video_vs       : std_logic;
 signal main_video_hs       : std_logic;
 signal main_video_hblank   : std_logic;
@@ -453,13 +453,13 @@ begin
             end if;
 
             if dim_video = '1' then
-                video_red   <= "0" & main_video_red   & main_video_red(3 downto 1);
-                video_green <= "0" & main_video_green & main_video_green(3 downto 1);
-                video_blue  <= "0" & main_video_blue  & main_video_blue(3 downto 1);
+                video_red   <= "0" & main_video_red   & main_video_red   & main_video_red(2 downto 2);
+                video_green <= "0" & main_video_green & main_video_green & main_video_green(2 downto 2);
+                video_blue  <= "0" & main_video_blue  & main_video_blue  & main_video_blue & main_video_blue(1 downto 1);  
             else
-                video_red   <= main_video_red   & main_video_red;
-                video_green <= main_video_green & main_video_green;
-                video_blue  <= main_video_blue  & main_video_blue;
+                video_red   <= main_video_red   & main_video_red   & main_video_red(2 downto 1);
+                video_green <= main_video_green & main_video_green & main_video_green(2 downto 1);
+                video_blue  <= main_video_blue  & main_video_blue  & main_video_blue & main_video_blue;
             end if;
 
             video_hs     <= main_video_hs;
@@ -598,7 +598,6 @@ begin
    -- Use On-Screen-Menu selections to configure several audio and video settings
    -- Video and audio mode control
    qnice_dvi_o                <= '0';                                         -- 0=HDMI (with sound), 1=DVI (no sound)
-   qnice_scandoubler_o        <= '0';                                         -- no scandoubler
    qnice_audio_mute_o         <= '0';
    qnice_audio_filter_o       <= '1';
    

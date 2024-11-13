@@ -103,7 +103,7 @@ signal reset             : std_logic;
 
 
 -- highscore system
-signal hs_address       : std_logic_vector(10 downto 0);
+signal hs_address       : std_logic_vector(15 downto 0);
 signal hs_data_in       : std_logic_vector(7 downto 0);
 signal hs_data_out      : std_logic_vector(7 downto 0);
 signal hs_write_enable  : std_logic;
