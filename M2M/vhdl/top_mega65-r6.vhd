@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- Commodore 64 for MEGA65 (C64MEGA65)
+-- Galaga for MEGA65 (C64MEGA65)
 --
 -- MEGA65 R6 main file that contains the whole machine
 --
@@ -433,6 +433,8 @@ architecture synthesis of mega65_r6 is
 
 begin
 
+   cart_en_o         <= '1';
+
    -- Driver for the audio DAC (AK4432VT).
    i_audio : entity work.audio
       port map (
@@ -453,7 +455,6 @@ begin
    -- C64 Cartridge port
    ---------------------------------------------------------------------------------------------
 
-   cart_en_o         <= cart_en;
    cart_reset_io     <= cart_reset_out when cart_reset_oe = '1' else 'Z';
    cart_game_io      <= cart_game_out  when cart_game_oe  = '1' else 'Z';
    cart_exrom_io     <= cart_exrom_out when cart_exrom_oe = '1' else 'Z';
